@@ -4,6 +4,10 @@ import House from '../models/House.js';
 
 class ReserveController{
 
+  async index(req, res){
+    const { user_id } = req.headers;
+  }
+
   async store(req, res){
     const { user_id } = req.headers;
     const { house_id } = req.params;
