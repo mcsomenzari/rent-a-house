@@ -2,6 +2,7 @@ import express from 'express';
 import routes from './routes.js';
 import mongoose from 'mongoose';
 import path from 'path';
+import cors from 'cors';
 import upload from './config/upload.js';
 
 class App{
@@ -9,6 +10,7 @@ class App{
   constructor(){
     this.server = express();
     
+    //FIXME: Hide password
     mongoose.connect('mongodb+srv://mcsomenzari:CYICE70MhfHBozi7@cluster0.3jsjc.mongodb.net/devhouse?retryWrites=true&w=majority&appName=Cluster0');
 
     this.middlewares();
@@ -16,6 +18,7 @@ class App{
   }
 
   middlewares(){
+    this.server.use(cors());
 
     this.server.use(
       '/files',

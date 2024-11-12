@@ -33,6 +33,8 @@ class HouseController {
     const { description, price, location, status } = req.body;
     const { user_id } = req.headers;    
 
+    //TODO: Verificar se existe o arquivo da imagem ao realizar o post. Crash no sistema se estiver vazio.
+    // O middleware preenche o fiel. Verificar o que acontece quando está vazio.
     const house = await House.create({
       user: user_id,
       thumbnail: req.file.filename,
@@ -58,11 +60,12 @@ class HouseController {
     console.log(String(user._id));
     console.log(houses.user);
 
-    // Quando não encotra, o valor fica nulo (ocorre erro)
+    // Quando não encontra, o valor fica nulo (ocorre erro)
     if (String(user._id) !== String(houses.user)){
       return res.status(401).json({ error: 'Não autorizado.'});
     }
     
+    //TODO: Verificar se existe o arquivo da imagem ao realizar o post. Crash no sistema se estiver vazio.
     const house = await House.updateOne({ _id: house_id }, {
       user: user_id,
       thumbnail: req.file.filename,
