@@ -3,8 +3,8 @@
 
 import House from '../models/House.js'
 import User from '../models/User.js';
-
-
+import * as Yup from 'yup';
+import { setLocale } from 'yup';
 
 class HouseController {
 
@@ -16,6 +16,22 @@ class HouseController {
   }
 
   async store(req, res){
+
+    /* setLocale({
+      mixed: {
+        default: 'Não é válido',
+      },
+      number: {
+        min: 'Deve ser maior que ${min}',
+      },
+    }); */
+
+    const schema = Yup.object().shape({
+      description: Yup.string().required(),
+      price: Yup.number().required(),
+      location: Yup.string().required(),
+      status: Yup.boolean().required()      
+    })
     
     /*
     console.log(req.body);
@@ -33,7 +49,21 @@ class HouseController {
     const { description, price, location, status } = req.body;
     const { user_id } = req.headers;    
 
-    //TODO: Verificar se existe o arquivo da imagem ao realizar o post. Crash no sistema se estiver vazio.
+    if(!(await schema.isValid(req.body))){
+      return res.status(400).json({ error: 'Falha na validação.' });
+    }
+
+    //TODO: Implementar uma msg de erro para cada campo inválido.
+    /* try {
+      await schema.validate(req.body);
+    } catch (err) {
+      err.name; // => 'ValidationError'
+      err.errors; // => ['Deve ser maior que 18']
+      return res.status(400).json({ err });
+    } */
+
+
+    //TODO: store-Verificar se existe o arquivo da imagem ao realizar o post. Crash no sistema se estiver vazio.
     // O middleware preenche o fiel. Verificar o que acontece quando está vazio.
     const house = await House.create({
       user: user_id,
@@ -49,10 +79,22 @@ class HouseController {
   }
 
   async update(req, res){
+    
+    const schema = Yup.object().shape({
+      description: Yup.string().required(),
+      price: Yup.number().required(),
+      location: Yup.string().required(),
+      status: Yup.boolean().required()      
+    })
+
     //const { filename } = req.file;
     const { house_id } = req.params;
     const { description, price, location, status } = req.body;
     const { user_id } = req.headers;
+
+    if(!(await schema.isValid(req.body))){
+      return res.status(400).json({ error: 'Falha na validação.' });
+    }
 
     const user = await User.findById(user_id);
     const houses = await House.findById(house_id);
@@ -65,7 +107,7 @@ class HouseController {
       return res.status(401).json({ error: 'Não autorizado.'});
     }
     
-    //TODO: Verificar se existe o arquivo da imagem ao realizar o post. Crash no sistema se estiver vazio.
+    //TODO: update-Verificar se existe o arquivo da imagem ao realizar o post. Crash no sistema se estiver vazio.
     const house = await House.updateOne({ _id: house_id }, {
       user: user_id,
       thumbnail: req.file.filename,
